@@ -174,6 +174,14 @@ GitHub Actions runs the build and the full `ctest` suite on every push and
 pull request, using both `g++` and `clang++` on `ubuntu-latest`. See
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
+The pipeline follows the AI-driven development best practices from
+[`link-assistant/hive-mind`](https://github.com/link-assistant/hive-mind/blob/main/docs/BEST-PRACTICES.md):
+a `detect-changes` gate skips irrelevant jobs, `merge-check` simulates a
+fresh merge against the base branch, `lint` enforces per-file line limits,
+`docs` checks Markdown for broken links, and `build-and-test` only runs
+after fast checks succeed. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for
+details on the full workflow and how to reproduce each gate locally.
+
 ## First milestone intention
 
 The first milestone is to keep `meta_rm` small but structurally correct:
