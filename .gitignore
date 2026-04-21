@@ -1,0 +1,12 @@
+/build/
+/out/
+/.idea/
+/.vscode/
+*.user
+*.obj
+*.o
+*.a
+*.so
+*.dll
+*.exe
+.DS_Store
