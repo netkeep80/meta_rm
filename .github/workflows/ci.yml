@@ -118,7 +118,7 @@ jobs:
       - name: Configure
         env:
           CXX: ${{ matrix.compiler }}
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DMETA_RM_BUILD_TESTS=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DMETA_RM_BUILD_TESTS=ON -DMETA_RM_ENABLE_WARNINGS=ON
 
       - name: Build
         run: cmake --build build --config ${{ matrix.build_type }}

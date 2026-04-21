@@ -1,0 +1,14 @@
+# Configuration for lychee link checker used by the docs-links CI job.
+max_concurrency = 4
+max_redirects = 5
+retry_wait_time = 2
+timeout = 20
+accept = [200, 203, 206, 429]
+
+exclude_all_private = true
+exclude = [
+    # localhost and placeholder links
+    "^https?://localhost",
+    "^https?://127\\.0\\.0\\.1",
+    "^https?://example\\.com",
+]

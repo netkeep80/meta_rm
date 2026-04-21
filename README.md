@@ -160,6 +160,14 @@ To run the test executable directly (for example, to use Catch2 filters):
 
 Tests can be disabled with `-DMETA_RM_BUILD_TESTS=OFF` when configuring.
 
+To reproduce CI's strict compile checks locally, enable warnings-as-errors:
+
+```bash
+cmake -S . -B build -DMETA_RM_ENABLE_WARNINGS=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
 ## Adding new tests
 
 Drop a new `.cpp` file into `tests/` that includes
@@ -177,10 +185,17 @@ pull request, using both `g++` and `clang++` on `ubuntu-latest`. See
 The pipeline follows the AI-driven development best practices from
 [`link-assistant/hive-mind`](https://github.com/link-assistant/hive-mind/blob/main/docs/BEST-PRACTICES.md):
 a `detect-changes` gate skips irrelevant jobs, `merge-check` simulates a
-fresh merge against the base branch, `lint` enforces per-file line limits,
-`docs` checks Markdown for broken links, and `build-and-test` only runs
-after fast checks succeed. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for
-details on the full workflow and how to reproduce each gate locally.
+fresh merge against the base branch, `lint` enforces per-file line limits
+(code ≤ 1500, docs ≤ 2500), `docs` checks Markdown for broken links via
+[lychee](https://github.com/lycheeverse/lychee), and `build-and-test` only
+runs after fast checks succeed. Builds enable
+`-Wall -Wextra -Wpedantic -Wshadow -Werror` via the
+`META_RM_ENABLE_WARNINGS=ON` CMake option so warnings cannot regress
+silently. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details on the full
+workflow and how to reproduce each gate locally.
+
+Case-study notes and reproduction artefacts for future issues live in
+[`docs/case-studies/`](docs/case-studies/README.md).
 
 ## First milestone intention
 
