@@ -128,9 +128,19 @@ This is deliberate. The current package is meant to preserve the main idea and p
 
 ## Build
 
+`meta_rm` requires a C++20 compiler. The standard is fixed hard in CMake
+(`CMAKE_CXX_STANDARD 20`, `CMAKE_CXX_STANDARD_REQUIRED ON`,
+`CMAKE_CXX_EXTENSIONS OFF`) because `fixed_string` as a class NTTP,
+`concepts`/`requires`, and constrained alias templates are part of the
+model — not optional polish. C++17 is not supported.
+
 Requirements:
 - CMake 3.20 or newer
-- A C++20 compiler (tested with `g++` 13 and `clang++` 17)
+- A C++20 compiler
+
+CI builds and tests the project with GCC and Clang on `ubuntu-latest`.
+Exact compiler versions follow the Ubuntu image defaults unless pinned
+explicitly in the workflow.
 
 Configure and build:
 
@@ -179,7 +189,10 @@ failures surface at compile time.
 ## Continuous integration
 
 GitHub Actions runs the build and the full `ctest` suite on every push and
-pull request, using both `g++` and `clang++` on `ubuntu-latest`. See
+pull request, using both GCC and Clang on `ubuntu-latest`. Every matrix
+entry configures CMake with `-DCMAKE_CXX_STANDARD=20
+-DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF` so the build
+never silently falls back to an older standard. See
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 The pipeline follows the AI-driven development best practices from
