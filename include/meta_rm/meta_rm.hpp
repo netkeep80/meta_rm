@@ -106,8 +106,34 @@ struct relation {
 // forward declarations for relation model
 // -----------------------------------------------------------------------------
 
+namespace detail {
+// Internal tag used to name the canonical empty slot of `rm`. It is never
+// surfaced in user code: the public handle for the empty element is `rm_void`,
+// which is the self-closed `rm<rm_void, rm_void, rm_void>` specialization.
+struct rm_void_tag;
+} // namespace detail
+
+// `rm` is the single ternary constructor. It always takes three slots; any
+// slot that is intentionally empty is written with `rm_void`, for example:
+//
+//   rm<rm_void, inherit_r, Mix>
+//   rm<Subject, relation, rm_void>
+//
+// The self-closed empty element `rm_void` is the single canonical origin of
+// the model:
+//
+//   rm_void == rm<rm_void, rm_void, rm_void>
+//   rm_void::S == rm_void::R == rm_void::O == rm_void
+//
+// `detail::rm_void_tag` exists only to make the self-closed specialization
+// expressible in C++; it is an implementation detail and no user-facing
+// `::S`/`::R`/`::O` ever yields the raw tag or `void`.
 template <typename S_, typename R_, typename O_>
 struct rm;
+
+// Public alias for the canonical self-closed empty/root element of the model.
+// Use `rm_void` wherever a triad slot is intentionally empty.
+using rm_void = rm<detail::rm_void_tag, detail::rm_void_tag, detail::rm_void_tag>;
 
 template <typename T>
 struct is_rm : std::false_type {};
@@ -149,6 +175,24 @@ struct rm {
     // What Extra... means is relation-specific and can evolve with the language.
     template <typename... Extra>
     using type = typename R::template apply<resolve_t<S>, resolve_t<O>, Extra...>::type;
+};
+
+// Canonical self-closed empty/root element. `rm_void` is the single origin of
+// the model: its S, R, and O are `rm_void` itself, so
+// `rm_void == rm<rm_void, rm_void, rm_void>` holds at the type level. The
+// element resolves to itself through `::type<>`, which makes it a legal base
+// case in any relation tree without introducing a parallel sentinel type.
+template <>
+struct rm<detail::rm_void_tag, detail::rm_void_tag, detail::rm_void_tag> {
+    using S = rm_void;
+    using R = rm_void;
+    using O = rm_void;
+
+    using meta = rm_node_meta;
+    using children = type_list<S, R, O>;
+
+    template <typename... Extra>
+    using type = rm_void;
 };
 
 // -----------------------------------------------------------------------------
