@@ -128,10 +128,51 @@ This is deliberate. The current package is meant to preserve the main idea and p
 
 ## Build
 
+Requirements:
+- CMake 3.20 or newer
+- A C++20 compiler (tested with `g++` 13 and `clang++` 17)
+
+Configure and build:
+
 ```bash
 cmake -S . -B build
 cmake --build build
 ```
+
+## Run tests
+
+Tests use [Catch2 v3](https://github.com/catchorg/Catch2) and are registered
+with CTest. Catch2 is fetched automatically by CMake during configuration,
+so no extra setup is required.
+
+```bash
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+To run the test executable directly (for example, to use Catch2 filters):
+
+```bash
+./build/tests/meta_rm_tests --list-tests
+./build/tests/meta_rm_tests "[inherit]"
+```
+
+Tests can be disabled with `-DMETA_RM_BUILD_TESTS=OFF` when configuring.
+
+## Adding new tests
+
+Drop a new `.cpp` file into `tests/` that includes
+`<catch2/catch_test_macros.hpp>` and add it to the `meta_rm_tests` target in
+`tests/CMakeLists.txt`. Each file should focus on one relation or one
+feature of the kernel. Prefer `STATIC_REQUIRE` for type-level assertions so
+failures surface at compile time.
+
+## Continuous integration
+
+GitHub Actions runs the build and the full `ctest` suite on every push and
+pull request, using both `g++` and `clang++` on `ubuntu-latest`. See
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## First milestone intention
 
