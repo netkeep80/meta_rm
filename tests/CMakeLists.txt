@@ -15,6 +15,7 @@ include(Catch)
 add_executable(meta_rm_tests
     smoke.cpp
     relation_inherit.cpp
+    relation_root.cpp
     primitives.cpp
 )
 target_link_libraries(meta_rm_tests PRIVATE meta_rm meta_rm_warnings Catch2::Catch2WithMain)

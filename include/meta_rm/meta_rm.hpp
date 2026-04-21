@@ -106,7 +106,16 @@ struct relation {
 // forward declarations for relation model
 // -----------------------------------------------------------------------------
 
-template <typename S_, typename R_, typename O_>
+// rm has three defaulted template parameters. The primary template is the
+// general ternary node rm<S, R, O>. The explicit specialization rm<void, void,
+// void> (spelled rm<>) is the canonical self-closed root:
+//
+//     rm<>::S == rm<>
+//     rm<>::R == rm<>
+//     rm<>::O == rm<>
+//
+// so the public semantics match rm = rm<rm, rm, rm>.
+template <typename S_ = void, typename R_ = void, typename O_ = void>
 struct rm;
 
 template <typename T>
@@ -150,6 +159,27 @@ struct rm {
     template <typename... Extra>
     using type = typename R::template apply<resolve_t<S>, resolve_t<O>, Extra...>::type;
 };
+
+// Canonical self-closed root. rm<> is the single origin of the model:
+// its S, R, and O are rm<> itself, so rm<> == rm<rm<>, rm<>, rm<>> as types.
+// The root resolves to itself through ::type<> so it can be used as a base
+// case in any relation tree without introducing a parallel sentinel.
+template <>
+struct rm<void, void, void> {
+    using S = rm<void, void, void>;
+    using R = rm<void, void, void>;
+    using O = rm<void, void, void>;
+
+    using meta = rm_node_meta;
+    using children = type_list<S, R, O>;
+
+    template <typename... Extra>
+    using type = rm<void, void, void>;
+};
+
+// Public alias for the canonical root. Prefer `rm_root` in user code when the
+// intent is specifically the self-closed origin rather than a general node.
+using rm_root = rm<>;
 
 // -----------------------------------------------------------------------------
 // introspection
